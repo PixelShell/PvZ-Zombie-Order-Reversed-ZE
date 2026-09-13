@@ -20,6 +20,7 @@
  */
 
 #include "Board.h"
+#include "ConstEnums.h"
 #include "Plant.h"
 #include "Zombie.h"
 #include "Cutscene.h"
@@ -331,6 +332,28 @@ void Projectile::CheckForCollision()
 		}
 
 		DoImpact(aZombie);
+	}
+
+	if (!mApp->mHardmode)
+	{
+		// Fire and ice projectiles can damage zomboss iceball and fireball
+		Zombie* aBoss = mBoard->GetBossZombie();
+		Reanimation* aFireballReanim = mApp->ReanimationTryToGet(aBoss->mBossFireBallReanimID);
+		if (aFireballReanim != nullptr)
+		{
+			float aDistX = mPosX - aBoss->GetBossFireballPosX();
+			float aDistY = mPosY - aBoss->GetBossFireballPosY();
+			
+			if ((aDistX * aDistX) + (aDistY * aDistY) <= (40 * 40))
+			{
+				if((mProjectileType == ProjectileType::PROJECTILE_SNOWPEA && aBoss->mIsFireBall)
+				|| (mProjectileType == ProjectileType::PROJECTILE_FIREBALL && !aBoss->mIsFireBall))
+				{
+					aBoss->DamageBossFireball();
+					DoImpact(nullptr);
+				}
+			}
+		}	
 	}
 }
 

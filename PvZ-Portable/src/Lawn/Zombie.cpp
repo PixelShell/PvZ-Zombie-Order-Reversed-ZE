@@ -43,6 +43,7 @@
 #include "../PvzpLib/Attachment.h"
 #include "../PvzpLib/PvzpParticle.h"
 #include <algorithm>
+#include <cstdint>
 
 constexpr const int ZOMBIE_START_RANDOM_OFFSET = 40;
 constexpr const int BUNGEE_ZOMBIE_HEIGHT = 3000;
@@ -225,6 +226,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 	mMoweredReanimID = ReanimationID::REANIMATIONID_NULL;
 	mZombatarHeadReanimID = ReanimationID::REANIMATIONID_NULL;
 	mLastPortalX = -1;
+
 	for (int i = 0; i < MAX_ZOMBIE_FOLLOWERS; i++)
 	{
 		mFollowerZombieID[i] = ZombieID::ZOMBIEID_NULL;
@@ -685,10 +687,13 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 	case ZombieType::ZOMBIE_BOSS:
 		mPosX = 0.0f;
 		mPosY = 0.0f;
+		/*if (!mBoard->StageHasRoof())
+			mPosY += 35;*/
+
 		mZombieRect = Rect(700, 80, 90, 430);
 		mZombieAttackRect = Rect(0, 0, 0, 0);
 		aRenderLayer = RenderLayer::RENDER_LAYER_TOP;
-		mBodyHealth = mApp->IsAdventureMode() ? 40000 : 60000;
+		mBodyHealth = mApp->IsAdventureMode() ? mBoard->mLevel * 800 : 60000;
 		if (IsOnBoard())
 		{
 			PlayZombieReanim("anim_enter", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 12.0f);
@@ -2204,7 +2209,7 @@ void Zombie::UpdateZombieGargantuar()
 #endif
 			aZombieImp->mChilledCounter = mChilledCounter;
 			aZombieImp->mVelZ = 0.5f * (aThrowingDistance / aZombieImp->mVelX) * THOWN_ZOMBIE_GRAVITY;
-			aZombieImp->PlayZombieReanim("anim_thrown", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 18.0f);
+			//aZombieImp->PlayZombieReanim("anim_thrown", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 18.0f);
 			aZombieImp->UpdateReanim();
 			mApp->PlayFoley(FoleyType::FOLEY_IMP);
 		}
@@ -2299,7 +2304,7 @@ void Zombie::UpdateZombieImp()
 		{
 			mAltitude = 0.0f;
 			mZombiePhase = ZombiePhase::PHASE_IMP_LANDING;
-			PlayZombieReanim("anim_land", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 24.0f);
+			//PlayZombieReanim("anim_land", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 24.0f);
 		}
 	}
 	else if (mZombiePhase == ZombiePhase::PHASE_IMP_LANDING)
@@ -4512,7 +4517,7 @@ void Zombie::UpdateActions()
 	{
 		UpdateZombieBackupDancer();
 	}
-	if (mZombieType == ZombieType::ZOMBIE_IMP)
+	if (mZombieType == ZombieType::ZOMBIE_FLAG)
 	{
 		UpdateZombieImp();
 	}
@@ -9816,11 +9821,7 @@ void Zombie::BossSpawnAttack()
 	case 2:     aTrackName = "anim_spawn_3";    break;
 	case 3:     aTrackName = "anim_spawn_4";    break;
 	case 4:     aTrackName = "anim_spawn_5";    break;
-#ifdef DO_FIX_BUGS
 	default:    aTrackName = "anim_spawn_5";    break;  // compromise fix for the pool-stage spawn crash without editing the animation
-#else
-	default:    PVZP_ASSERT(false);                   break;
-#endif
 	}
 	PlayZombieReanim(aTrackName, ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 12.0f);
 	mApp->PlayFoley(FoleyType::FOLEY_HYDRAULIC_SHORT);
@@ -9853,8 +9854,10 @@ void Zombie::BossSpawnContact()
 		aZombieType = PvzpPickFromArray(gBossZombieList, aZombieTypeCount);
 	}
 
-	Zombie* aZombie = mBoard->AddZombieInRow(aZombieType, mTargetRow, 0);
-	aZombie->mPosX = 600.0f;
+	Zombie* aZombie = mBoard->AddZombieInRow(aZombieType, mTargetRow, -1);
+	if (aZombie) {
+		aZombie->mPosX = 600.0f;
+	}
 }
 
 void Zombie::BossStompAttack()
@@ -9940,7 +9943,7 @@ void Zombie::BossBungeeSpawn()
 
 	for (int i = 0; i < NUM_BOSS_BUNGEES; i++)
 	{
-		Zombie* aZombie = mBoard->AddZombieInRow(ZombieType::ZOMBIE_BUNGEE, 0, 0);
+		Zombie* aZombie = mBoard->AddZombieInRow(ZombieType::ZOMBIE_NEWSPAPER, 0, 0);
 		aZombie->PickBungeeZombieTarget(mTargetCol + i);
 		aZombie->mAltitude = aZombie->mPosY - 30.0f;
 		mFollowerZombieID[i] = mBoard->ZombieGetID(aZombie);
@@ -9991,6 +9994,25 @@ void Zombie::BossHeadAttack()
 	mApp->PlayFoley(FoleyType::FOLEY_HYDRAULIC_SHORT);
 }
 
+void Zombie::DamageBossFireball()
+{
+	mFireballHp--;
+
+	Reanimation* aFireBallReanim = mApp->ReanimationTryToGet(mBossFireBallReanimID);
+	if (!aFireBallReanim)
+		return;
+
+	//aFireBallReanim->OverrideScale(float(mFireballHp) / 3, float(mFireballHp) / 3);
+	
+	if (mFireballHp <= 0)
+	{
+		if (mIsFireBall)
+			BossDestroyFireball();
+		else
+			BossDestroyIceballInRow();
+	}
+}
+
 void Zombie::BossHeadSpit()
 {
 	Reanimation* aFireBallReanim = mApp->ReanimationTryToGet(mBossFireBallReanimID);
@@ -10000,12 +10022,13 @@ void Zombie::BossHeadSpit()
 		mBossFireBallReanimID = ReanimationID::REANIMATIONID_NULL;
 	}
 
+	mFireballHp = 3;
+
 	mZombiePhase = ZombiePhase::PHASE_BOSS_HEAD_SPIT;
-#ifdef DO_FIX_BUGS
+
 	mFireballRow = RandRangeInt(0, mBoard->StageHas6Rows() ? 5 : 4);  // pool boss compatibility
-#else
-	mFireballRow = RandRangeInt(0, 4);
-#endif
+	//mFireballRow = RandRangeInt(0, 4);
+
 	mIsFireBall = RandRangeInt(0, 1) == 0;
 
 	const char* aTrackName;
@@ -10016,11 +10039,7 @@ void Zombie::BossHeadSpit()
 	case 2:     aTrackName = "anim_head_attack_3";      break;
 	case 3:     aTrackName = "anim_head_attack_4";      break;
 	case 4:     aTrackName = "anim_head_attack_5";      break;
-#ifdef DO_FIX_BUGS
 	default:    aTrackName = "anim_head_attack_5";      break;  // compromise fix for the pool-stage ball spit without editing the animation
-#else
-	default:    PVZP_ASSERT(false);                           break;
-#endif
 	}
 	PlayZombieReanim(aTrackName, ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 12.0f);
 
@@ -10055,6 +10074,8 @@ void Zombie::BossDestroyIceballInRow()
 		aFireBallReanim->ReanimationDie();
 		mBossFireBallReanimID = ReanimationID::REANIMATIONID_NULL;
 		mBoard->RemoveParticleByType(ParticleEffect::PARTICLE_ICEBALL_TRAIL);
+
+		mFireballRow = -1;
 	}
 }
 
@@ -10077,6 +10098,8 @@ void Zombie::BossDestroyFireball()
 		aFireBallReanim->ReanimationDie();
 		mBossFireBallReanimID = ReanimationID::REANIMATIONID_NULL;
 		mBoard->RemoveParticleByType(ParticleEffect::PARTICLE_FIREBALL_TRAIL);
+
+		mFireballRow = -1;
 	}
 }
 
@@ -10135,6 +10158,32 @@ void Zombie::BossHeadSpitContact()
 	mBossFireBallReanimID = mApp->ReanimationGetID(aFireBallReanim);
 	mApp->ReanimationTryToGet(mSpecialHeadReanimID)->PlayReanim("anim_laugh", ReanimLoopType::REANIM_LOOP, 20, 18.0f);
 	mApp->PlayFoley(FoleyType::FOLEY_HYDRAULIC_SHORT);
+}
+
+float Zombie::GetBossFireballPosX()
+{
+	if (mZombieType != ZombieType::ZOMBIE_BOSS)
+		return 0;
+
+	Reanimation* aFireballReanim = mApp->ReanimationTryToGet(mBossFireBallReanimID);
+	if (aFireballReanim == nullptr)
+		return 0;
+
+	return aFireballReanim->mOverlayMatrix.m02;
+}
+
+float Zombie::GetBossFireballPosY()
+{
+	if (mZombieType != ZombieType::ZOMBIE_BOSS)
+		return 0;
+
+	Reanimation* aFireballReanim = mApp->ReanimationTryToGet(mBossFireBallReanimID);
+	if (aFireballReanim == nullptr)
+		return 0;
+
+	float aPosX = aFireballReanim->mOverlayMatrix.m02;
+
+	return mBoard->GetPosYBasedOnRow(aPosX + 75.0f, mFireballRow);
 }
 
 void Zombie::UpdateBossFireball()
@@ -10212,6 +10261,8 @@ void Zombie::BossStartDeath()
 	mApp->AddPvzpParticle(700.0f, 150.0f, 400000, ParticleEffect::PARTICLE_BOSS_EXPLOSION);
 	mApp->PlaySample(SOUND_BOSSEXPLOSION);
 	mApp->PlayFoley(FoleyType::FOLEY_GARGANTUDEATH);
+
+	mZombieFade = 1000;
 
 	BossDie();
 }
@@ -10486,9 +10537,9 @@ void Zombie::BossDie()
 		BossDestroyFireball();
 	}
 
-	mApp->mMusic->FadeOut(200);
+	//mApp->mMusic->FadeOut(200);
 
-	for (Zombie* aZombie : mBoard->mZombies)
+	/*for (Zombie* aZombie : mBoard->mZombies)
 	{
 		if (aZombie->mDead)
 			continue;
@@ -10496,7 +10547,7 @@ void Zombie::BossDie()
 		{
 			aZombie->DieWithLoot();
 		}
-	}
+	}*/
 
 	RemoveColdEffects();
 }

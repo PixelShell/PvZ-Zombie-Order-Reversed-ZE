@@ -1110,6 +1110,7 @@ void SexyAppBase::WriteToRegistry()
 	RegistryWriteBoolean("WaitForVSync", mWaitForVSync);
 	RegistryWriteBoolean("AutoCollect", mAutoCollect);
 	RegistryWriteBoolean("HealthbarEnabled", mHealthbarEnabled);
+	RegistryWriteBoolean("Hardmode", mHardmode);
 }
 
 bool SexyAppBase::RegistryEraseKey(const std::string& _theKeyName)
@@ -1370,6 +1371,7 @@ void SexyAppBase::ReadFromRegistry()
 	RegistryReadBoolean("WaitForVSync", &mWaitForVSync);
 	RegistryReadBoolean("AutoCollect", &mAutoCollect);
 	RegistryReadBoolean("HealthbarEnabled", &mHealthbarEnabled);
+	RegistryReadBoolean("Hardmode", &mHardmode);
 
 	if (RegistryReadInteger("InProgress", &anInt))
 		mLastShutdownWasGraceful = anInt == 0;

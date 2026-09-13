@@ -19,9 +19,11 @@
  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <string>
 #include <time.h>
 #include <algorithm>
 #include <SDL.h>
+#include "Common.h"
 #include "ConstEnums.h"
 #include "ZenGarden.h"
 #include "BoardInclude.h"
@@ -201,6 +203,7 @@ Board::Board(LawnApp* theApp)
 	mIgnoreMouseUp = false;
 	mFastButton = new GameButton(2);
 	mFastButton->Resize(720, 28, IMAGE_FASTBUTTON->mWidth, 46);
+	mBossSpawned = false;
 
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN || mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM)
 	{
@@ -1255,6 +1258,9 @@ void Board::InitZombieWaves()
 		mZombieCountDown = ZOMBIE_COUNTDOWN_FIRST_WAVE;
 	}
 
+	if (!mApp->mHardmode)
+		mZombieCountDown *= 4;
+
 	mZombieHealthWaveStart = 0;
 	mLastBungeeWave = 0;
 	mProgressMeterWidth = 0;
@@ -1702,6 +1708,8 @@ void Board::StartLevel()
 		mApp->IsFinalBossLevel())
 		return;
 	mApp->mMusic->StartGameMusic();
+
+	mBossSpawned = false;
 }
 
 LawnMower* Board::GetBottomLawnMower()
@@ -2657,6 +2665,22 @@ bool Board::CanAddBobSled()
 
 Zombie* Board::AddZombieInRow(ZombieType theZombieType, int theRow, int theFromWave)
 {
+	// Zombie order reverse. theFromWave -1 disables the reversing
+	if (theFromWave != -1)
+	{
+		if(theZombieType != ZombieType::ZOMBIE_NORMAL || !mBossSpawned)
+		{
+			theZombieType = ZombieType(ZombieType::NUM_CACHED_ZOMBIE_TYPES - 10 - theZombieType);
+			if (theZombieType == ZombieType::ZOMBIE_BOSS)
+			{
+				mBossSpawned = true;
+			}
+		}
+		else {
+			return nullptr;
+		}
+	}
+
 	if (mZombies.mSize >= mZombies.mMaxSize - 1)
 	{
 		PvzpTrace("Too many zombies!!");
@@ -7536,6 +7560,20 @@ bool Board::IsScaryPotterDaveTalking()
 	return mApp->IsScaryPotterLevel() && mNextSurvivalStageCounter > 0 && mApp->mCrazyDaveState != CrazyDaveState::CRAZY_DAVE_OFF;
 }
 
+void Board::DrawBossHp(Graphics* g)
+{
+	if (mApp->mGameScene != GameScenes::SCENE_PLAYING)
+		return;
+
+	std::string mBossHpText;
+	if (GetBossZombie())
+		mBossHpText = StrFormat("Zomboss HP: %d", GetBossZombie()->mBodyHealth);
+	else
+	 	mBossHpText	= "Zomboss HP: 0";
+
+	PvzpDrawString(g, mBossHpText, 5, 595, FONT_DWARVENTODCRAFT18, Color(255,0,0), DrawStringJustification::DS_ALIGN_LEFT);
+}
+
 void Board::DrawUITop(Graphics* g)
 {
 	if (StageHasFog())
@@ -7544,6 +7582,8 @@ void Board::DrawUITop(Graphics* g)
 	}
 
 	mFastButton->Draw(g);
+
+	DrawBossHp(g);
 
 	if (mTimeStopCounter > 0)
 	{
@@ -9569,6 +9609,27 @@ int Board::KillAllZombiesInRadius(int theRow, int theX, int theY, int theRadius,
 				aGridItem->GridItemDie();
 			}
 		}
+	}
+
+	// Explosions destroy iceballs when not on hardmode
+	if (!mApp->mHardmode)
+	{
+		Zombie* aBoss = GetBossZombie();
+		if (aBoss)
+		{
+			Reanimation* aFireballReanim = mApp->ReanimationTryToGet(aBoss->mBossFireBallReanimID);
+			if (aFireballReanim != nullptr)
+			{
+				float aDistX = theX - aBoss->GetBossFireballPosX();
+				float aDistY = theY - aBoss->GetBossFireballPosY();
+
+				float theFireballRadius = theRadius + 120;
+				
+				if ((aDistX * aDistX) + (aDistY * aDistY) <= (theFireballRadius * theFireballRadius))
+				aBoss->BossDestroyIceballInRow();
+			}
+		}
+			
 	}
 
 	return aKilledZombies;

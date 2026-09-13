@@ -141,6 +141,11 @@ void CutScene::PlaceAZombie(ZombieType theZombieType, int theGridX, int theGridY
 	}
 
 	Zombie* aZombie = mBoard->AddZombieInRow(theZombieType, theGridY, -2);
+
+	if (!aZombie) {
+		return;
+	}
+
 	PVZP_ASSERT(aZombie);
 	aZombie->mPosX = theGridX * 56 + 830;
 	aZombie->mPosY = theGridY * 90 + 70;
@@ -1431,7 +1436,8 @@ void CutScene::Update()
 	if (mApp->mGameMode == GameMode::GAMEMODE_INTRO)
 	{
 		mCutsceneTime += 10;
-		UpdateIntro();
+		//UpdateIntro();
+		mApp->PreNewGame(GameMode::GAMEMODE_ADVENTURE, false); // Intro crashes
 		return;
 	}
 	if (!aCutsceneTimeStop)

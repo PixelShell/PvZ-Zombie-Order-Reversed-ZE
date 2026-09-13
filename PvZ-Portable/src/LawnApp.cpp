@@ -189,6 +189,7 @@ LawnApp::LawnApp()
 	mCrazyDaveMessageIndex = -1;
 	mIsFastMode = false;
 	mSpeedModifier = 2;
+	mHardmode = false;
 
 	#ifdef PVZ_DEBUG
     mCheatKeys = true;

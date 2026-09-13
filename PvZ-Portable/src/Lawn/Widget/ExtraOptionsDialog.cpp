@@ -43,6 +43,7 @@ ExtraOptionsDialog::ExtraOptionsDialog(LawnApp* theApp, bool theFromGameSelector
 	mDebugCheckbox = MakeNewCheckbox(ExtraOptionsDialog::ExtraOptionsDialog_Debug, this, theApp->mDebugKeysEnabled);
 	mAutoCollectionCheckbox = MakeNewCheckbox(ExtraOptionsDialog::ExtraOptionsDialog_AutoCollect, this, theApp->mAutoCollect);
 	mHealthbarCheckbox = MakeNewCheckbox(ExtraOptionsDialog::ExtraOptionsDialog_Healthbar, this, theApp->mHealthbarEnabled);
+	mHardmodeCheckbox = MakeNewCheckbox(ExtraOptionsDialog::ExtraOptionsDialog_Hardmode, this, theApp->mHardmode);
 	mBackButton = MakeNewButton(
 		ExtraOptionsDialog::ExtraOptionsDialog_Back,
 		this,
@@ -71,6 +72,7 @@ ExtraOptionsDialog::~ExtraOptionsDialog()
 	delete mDebugCheckbox;
 	delete mAutoCollectionCheckbox;
 	delete mHealthbarCheckbox;
+	delete mHardmodeCheckbox;
 }
 
 int ExtraOptionsDialog::GetPreferredHeight(int theWidth)
@@ -86,6 +88,7 @@ void ExtraOptionsDialog::AddedToManager(Sexy::WidgetManager* theWidgetManager)
 	AddWidget(mDebugCheckbox);
 	AddWidget(mAutoCollectionCheckbox);
 	AddWidget(mHealthbarCheckbox);
+	AddWidget(mHardmodeCheckbox);
 }
 
 void ExtraOptionsDialog::RemovedFromManager(Sexy::WidgetManager* theWidgetManager)
@@ -95,14 +98,16 @@ void ExtraOptionsDialog::RemovedFromManager(Sexy::WidgetManager* theWidgetManage
 	RemoveWidget(mDebugCheckbox);
 	RemoveWidget(mAutoCollectionCheckbox);
 	RemoveWidget(mHealthbarCheckbox);
+	RemoveWidget(mHardmodeCheckbox);
 }
 
 void ExtraOptionsDialog::Resize(int theX, int theY, int theWidth, int theHeight)
 {
 	Dialog::Resize(theX, theY, theWidth, theHeight);
-	mDebugCheckbox->Resize(100, 186, 135, 40);
+	mDebugCheckbox->Resize(100, 156, 135, 40);
 	mAutoCollectionCheckbox->Resize(mDebugCheckbox->mX, mDebugCheckbox->mY + 45, 135, 40);
 	mHealthbarCheckbox->Resize(mDebugCheckbox->mX, mAutoCollectionCheckbox->mY + 45, 135, 40);
+	mHardmodeCheckbox->Resize(mDebugCheckbox->mX, mHealthbarCheckbox->mY + 45, 135, 40);
 	mBackButton->Resize(30, 381, mBackButton->mWidth, mBackButton->mHeight);
 }
 
@@ -121,6 +126,7 @@ void ExtraOptionsDialog::Draw(Sexy::Graphics* g)
 	PvzpDrawString(g, mApp->GetString("OPTIONS_AUTOCOLLECTION", "Sun & Coin Auto"), mAutoCollectionCheckbox->mX+45, mAutoCollectionCheckbox->mY+15, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
 	PvzpDrawString(g, mApp->GetString("OPTIONS_AUTOCOLLECTION", "Collection"), mAutoCollectionCheckbox->mX+45, mAutoCollectionCheckbox->mY+35, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
 	PvzpDrawString(g, mApp->GetString("OPTIONS_HEALTHBAR", "Healthbars"), mHealthbarCheckbox->mX+45, mHealthbarCheckbox->mY+25, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
+	PvzpDrawString(g, mApp->GetString("OPTIONS_HARDMODE", "Hardmode"), mHardmodeCheckbox->mX+45, mHardmodeCheckbox->mY+25, FONT_DWARVENTODCRAFT18, Color(255,0,0), DrawStringJustification::DS_ALIGN_LEFT);
 
 	if (aFontScale != 1.0f)
 		g->SetScale(1.0f, 1.0f, 0.0f, 0.0f);
@@ -144,6 +150,9 @@ void ExtraOptionsDialog::CheckboxChecked(int theId, bool checked)
 			break;
 		case ExtraOptionsDialog::ExtraOptionsDialog_Healthbar:
 			mApp->mHealthbarEnabled = !mApp->mHealthbarEnabled;
+			break;
+		case ExtraOptionsDialog::ExtraOptionsDialog_Hardmode:
+			mApp->mHardmode = !mApp->mHardmode;
 			break;
 	}
 }

@@ -181,6 +181,7 @@ public:
 
 	bool 					mAutoCollect;
 	bool 					mHealthbarEnabled;
+	bool 					mHardmode;
 
 	bool					mOnlyAllowOneCopyToRun;
 	unsigned int			mNotifyGameMessage;

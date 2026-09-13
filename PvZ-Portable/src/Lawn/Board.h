@@ -126,6 +126,8 @@ struct BungeeDropGrid
 class Board : public Widget, public ButtonListener
 {
 public:
+	bool							mBossSpawned;
+
 	LawnApp*						mApp;
 	DataArray<Zombie>				mZombies;
 	DataArray<Plant>				mPlants;
@@ -254,6 +256,7 @@ public:
 	~Board() override;
 
 	void							DrawHealthbar(Graphics* g, int posX, int posY, int width, int height, Color color, int hp, int maxHp);
+	void							DrawBossHp(Graphics* g);
 
 	void							DisposeBoard();
 	int								CountSunBeingCollected();

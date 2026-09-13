@@ -160,9 +160,15 @@ public:
 	ReanimationID                   mZombatarHeadReanimID;
 	int32_t                         mLastPortalX;
 
+	int32_t							mFireballHp;
+
 public:
 	Zombie();
 	~Zombie();
+
+	float							GetBossFireballPosX();
+	float							GetBossFireballPosY();
+	void							DamageBossFireball();
 
 	void                            ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Zombie* theParentZombie, int theFromWave);
 	void                            Animate();

@@ -44,6 +44,7 @@ protected:
         ExtraOptionsDialog_AutoCollect,
         ExtraOptionsDialog_Healthbar,
         ExtraOptionsDialog_Back,
+        ExtraOptionsDialog_Hardmode,
     };
 
 public:
@@ -51,6 +52,7 @@ public:
     Sexy::Checkbox*			mDebugCheckbox;
     Sexy::Checkbox*			mAutoCollectionCheckbox;
     Sexy::Checkbox*			mHealthbarCheckbox;
+    Sexy::Checkbox*			mHardmodeCheckbox;
     NewLawnButton*		    mBackButton;
     bool                    mFromGameSelector;
 public:

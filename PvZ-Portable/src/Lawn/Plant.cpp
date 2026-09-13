@@ -732,7 +732,7 @@ PvzpParticleSystem* Plant::AddAttachedParticle(int thePosX, int thePosY, int the
 bool Plant::FindTargetAndFire(int theRow, PlantWeapon thePlantWeapon)
 {
 	Zombie* aZombie = FindTargetZombie(theRow, thePlantWeapon);
-	if (aZombie == nullptr)
+	if (aZombie == nullptr && (mBoard->GetBossZombie() && mBoard->GetBossZombie()->mFireballRow != mRow))
 		return false;
 
 	EndBlink();

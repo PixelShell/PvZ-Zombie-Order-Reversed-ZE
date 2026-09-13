@@ -2309,12 +2309,15 @@ void Zombie::UpdateZombieImp()
 	}
 	else if (mZombiePhase == ZombiePhase::PHASE_IMP_LANDING)
 	{
-		Reanimation* aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
+		/*Reanimation* aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
 		if (aBodyReanim->mLoopCount > 0)
 		{
 			mZombiePhase = ZombiePhase::PHASE_ZOMBIE_NORMAL;
 			StartWalkAnim(0);
-		}
+		}*/
+		
+		mZombiePhase = ZombiePhase::PHASE_ZOMBIE_NORMAL;
+		StartWalkAnim(0);
 	}
 }
 

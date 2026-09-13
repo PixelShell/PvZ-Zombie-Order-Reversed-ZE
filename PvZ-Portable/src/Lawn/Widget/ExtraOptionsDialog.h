@@ -45,6 +45,7 @@ protected:
         ExtraOptionsDialog_Healthbar,
         ExtraOptionsDialog_Back,
         ExtraOptionsDialog_Hardmode,
+        ExtraOptionsDialog_Money,
     };
 
 public:
@@ -54,6 +55,7 @@ public:
     Sexy::Checkbox*			mHealthbarCheckbox;
     Sexy::Checkbox*			mHardmodeCheckbox;
     NewLawnButton*		    mBackButton;
+    LawnStoneButton*		mMoneyButton;
     bool                    mFromGameSelector;
 public:
     ExtraOptionsDialog(LawnApp* theApp, bool theFromGameSelector);

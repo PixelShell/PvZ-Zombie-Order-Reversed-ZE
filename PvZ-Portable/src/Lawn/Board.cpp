@@ -9611,10 +9611,8 @@ int Board::KillAllZombiesInRadius(int theRow, int theX, int theY, int theRadius,
 		}
 	}
 
-	// Explosions destroy iceballs when not on hardmode
-	if (!mApp->mHardmode)
-	{
-		Zombie* aBoss = GetBossZombie();
+	// Explosions destroy iceballs
+	Zombie* aBoss = GetBossZombie();
 		if (aBoss)
 		{
 			Reanimation* aFireballReanim = mApp->ReanimationTryToGet(aBoss->mBossFireBallReanimID);
@@ -9629,8 +9627,6 @@ int Board::KillAllZombiesInRadius(int theRow, int theX, int theY, int theRadius,
 				aBoss->BossDestroyIceballInRow();
 			}
 		}
-			
-	}
 
 	return aKilledZombies;
 }

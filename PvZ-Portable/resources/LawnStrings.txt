@@ -6,3 +6,6 @@ Ex
 
 [BACK]
 Back
+
+[MONEY_BUTTON]
+Set Max Money

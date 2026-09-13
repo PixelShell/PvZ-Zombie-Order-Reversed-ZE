@@ -732,7 +732,8 @@ PvzpParticleSystem* Plant::AddAttachedParticle(int thePosX, int thePosY, int the
 bool Plant::FindTargetAndFire(int theRow, PlantWeapon thePlantWeapon)
 {
 	Zombie* aZombie = FindTargetZombie(theRow, thePlantWeapon);
-	if (aZombie == nullptr && (mBoard->GetBossZombie() && mBoard->GetBossZombie()->mFireballRow != mRow))
+	Zombie* aBoss = mBoard->GetBossZombie();
+	if (aZombie == nullptr && (!aBoss || (aBoss->mFireballRow != mRow || aBoss->GetBossFireballPosX() < mX)))
 		return false;
 
 	EndBlink();
@@ -2448,7 +2449,7 @@ void Plant::UpdateBowling()
 		}
 		else
 		{
-			aZombie->TakeDamage(1800, 0U);
+			aZombie->TakeDamage(500, 0U); // Originally 1800
 		}
 
 		if ((!mApp->IsFirstTimeAdventureMode() || mApp->mPlayerInfo->GetLevel() > 10) && mSeedType == SeedType::SEED_WALLNUT)

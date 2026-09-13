@@ -44,6 +44,7 @@ ExtraOptionsDialog::ExtraOptionsDialog(LawnApp* theApp, bool theFromGameSelector
 	mAutoCollectionCheckbox = MakeNewCheckbox(ExtraOptionsDialog::ExtraOptionsDialog_AutoCollect, this, theApp->mAutoCollect);
 	mHealthbarCheckbox = MakeNewCheckbox(ExtraOptionsDialog::ExtraOptionsDialog_Healthbar, this, theApp->mHealthbarEnabled);
 	mHardmodeCheckbox = MakeNewCheckbox(ExtraOptionsDialog::ExtraOptionsDialog_Hardmode, this, theApp->mHardmode);
+
 	mBackButton = MakeNewButton(
 		ExtraOptionsDialog::ExtraOptionsDialog_Back,
 		this,
@@ -53,6 +54,8 @@ ExtraOptionsDialog::ExtraOptionsDialog(LawnApp* theApp, bool theFromGameSelector
 		IMAGE_OPTIONS_BACKTOGAMEBUTTON0,
 		IMAGE_OPTIONS_BACKTOGAMEBUTTON2
 	);
+	mMoneyButton = MakeButton(ExtraOptionsDialog::ExtraOptionsDialog_Money, this, "[MONEY_BUTTON]");
+
 	mBackButton->mTranslateX = 0;
 	mBackButton->mTranslateY = 0;
 	mBackButton->mTextOffsetX = -2;
@@ -73,6 +76,7 @@ ExtraOptionsDialog::~ExtraOptionsDialog()
 	delete mAutoCollectionCheckbox;
 	delete mHealthbarCheckbox;
 	delete mHardmodeCheckbox;
+	delete mMoneyButton;
 }
 
 int ExtraOptionsDialog::GetPreferredHeight(int theWidth)
@@ -89,6 +93,7 @@ void ExtraOptionsDialog::AddedToManager(Sexy::WidgetManager* theWidgetManager)
 	AddWidget(mAutoCollectionCheckbox);
 	AddWidget(mHealthbarCheckbox);
 	AddWidget(mHardmodeCheckbox);
+	AddWidget(mMoneyButton);
 }
 
 void ExtraOptionsDialog::RemovedFromManager(Sexy::WidgetManager* theWidgetManager)
@@ -99,15 +104,17 @@ void ExtraOptionsDialog::RemovedFromManager(Sexy::WidgetManager* theWidgetManage
 	RemoveWidget(mAutoCollectionCheckbox);
 	RemoveWidget(mHealthbarCheckbox);
 	RemoveWidget(mHardmodeCheckbox);
+	RemoveWidget(mMoneyButton);
 }
 
 void ExtraOptionsDialog::Resize(int theX, int theY, int theWidth, int theHeight)
 {
 	Dialog::Resize(theX, theY, theWidth, theHeight);
-	mDebugCheckbox->Resize(100, 156, 135, 40);
+	mDebugCheckbox->Resize(100, 136, 135, 40);
 	mAutoCollectionCheckbox->Resize(mDebugCheckbox->mX, mDebugCheckbox->mY + 45, 135, 40);
 	mHealthbarCheckbox->Resize(mDebugCheckbox->mX, mAutoCollectionCheckbox->mY + 45, 135, 40);
 	mHardmodeCheckbox->Resize(mDebugCheckbox->mX, mHealthbarCheckbox->mY + 45, 135, 40);
+	mMoneyButton->Resize(107, mHardmodeCheckbox->mY + 45, 209, 46);
 	mBackButton->Resize(30, 381, mBackButton->mWidth, mBackButton->mHeight);
 }
 
@@ -189,6 +196,9 @@ void ExtraOptionsDialog::ButtonDepress(int theId)
 	case (ExtraOptionsDialog::ExtraOptionsDialog_Back):
 		mApp->KillDialog(Dialogs::DIALOG_EXTRAOPTIONS);
 		mApp->DoNewOptions(mFromGameSelector);
+		break;
+	case (ExtraOptionsDialog::ExtraOptionsDialog_Money):
+		mApp->mPlayerInfo->AddCoins(99999);
 		break;
 	}
 }

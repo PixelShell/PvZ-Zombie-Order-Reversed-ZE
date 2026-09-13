@@ -22,6 +22,7 @@
 #include "Coin.h"
 #include "Plant.h"
 #include "Board.h"
+#include "SexyAppBase.h"
 #include "Zombie.h"
 #include "Cutscene.h"
 #include "GridItem.h"
@@ -385,7 +386,10 @@ void Plant::PlantInitialize(int theGridX, int theGridY, SeedType theSeedType, Se
 			aBodyReanim->SetFramesForLayer("anim_bigidle");
 
 		mState = PlantState::STATE_SUNSHROOM_SMALL;
-		mStateCountdown = 12000;
+		if (mApp->mDifficulty <= GameDifficulty::DIFFICULTY_HARD)
+			mStateCountdown = 12000;
+		else
+		 	mStateCountdown = 1;
 
 		break;
 	}

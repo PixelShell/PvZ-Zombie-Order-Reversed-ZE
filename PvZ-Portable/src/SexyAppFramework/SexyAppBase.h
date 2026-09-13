@@ -31,6 +31,7 @@
 #include "widget/ButtonListener.h"
 #include "widget/DialogListener.h"
 #include "misc/Buffer.h"
+#include <cstdint>
 #include <mutex>
 #include <thread>
 #include <time.h>
@@ -143,6 +144,15 @@ enum
 	UPDATESTATE_PROCESS_DONE
 };
 
+enum GameDifficulty: int32_t
+{
+	DIFFICULTY_EASY = 0,
+	DIFFICULTY_NORMAL = 1,
+	DIFFICULTY_HARD = 2,
+	DIFFICULTY_UNALTERED = 3,
+	NUM_DIFFICULTY_COUNT = 4
+};
+
 class SexyAppBase : public ButtonListener, public DialogListener
 {
 public:
@@ -181,7 +191,7 @@ public:
 
 	bool 					mAutoCollect;
 	bool 					mHealthbarEnabled;
-	bool 					mHardmode;
+	GameDifficulty			mDifficulty;
 
 	bool					mOnlyAllowOneCopyToRun;
 	unsigned int			mNotifyGameMessage;

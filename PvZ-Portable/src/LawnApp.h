@@ -198,6 +198,7 @@ public:
 	void							DoConfirmBackToMain();
 	void							DoNewOptions(bool theFromGameSelector);
 	void							DoExtraOptions(bool theFromGameSelector);
+	void							DoDifficultyDialog(bool theFromGameSelector);
 	void							ShowZombatarTOS();
 	void							DoRegister();
 	void							DoRegisterError();

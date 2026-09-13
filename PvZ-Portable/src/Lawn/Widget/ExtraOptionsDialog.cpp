@@ -1,24 +1,3 @@
-/*
- * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
- *
- * SPDX-License-Identifier: LGPL-3.0-or-later
- *
- * This file is part of PvZ-Portable.
- *
- * PvZ-Portable is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * PvZ-Portable is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
- */
-
 #include "../Board.h"
 #include "GameButton.h"
 #include "../Cutscene.h"
@@ -29,12 +8,13 @@
 #include "../../Resources.h"
 #include "ExtraOptionsDialog.h"
 #include "../../ConstEnums.h"
+#include "graphics/Color.h"
 #include "widget/Checkbox.h"
 
 using namespace Sexy;
 
 ExtraOptionsDialog::ExtraOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
-	Dialog(nullptr, nullptr, Dialogs::DIALOG_NEWOPTIONS, true, "Options", "", "", Dialog::BUTTONS_NONE)
+	Dialog(nullptr, nullptr, Dialogs::DIALOG_EXTRAOPTIONS, true, "Options", "", "", Dialog::BUTTONS_NONE)
 {
 	mApp = theApp;
 	mFromGameSelector = theFromGameSelector;
@@ -43,7 +23,6 @@ ExtraOptionsDialog::ExtraOptionsDialog(LawnApp* theApp, bool theFromGameSelector
 	mDebugCheckbox = MakeNewCheckbox(ExtraOptionsDialog::ExtraOptionsDialog_Debug, this, theApp->mDebugKeysEnabled);
 	mAutoCollectionCheckbox = MakeNewCheckbox(ExtraOptionsDialog::ExtraOptionsDialog_AutoCollect, this, theApp->mAutoCollect);
 	mHealthbarCheckbox = MakeNewCheckbox(ExtraOptionsDialog::ExtraOptionsDialog_Healthbar, this, theApp->mHealthbarEnabled);
-	mHardmodeCheckbox = MakeNewCheckbox(ExtraOptionsDialog::ExtraOptionsDialog_Hardmode, this, theApp->mHardmode);
 
 	mBackButton = MakeNewButton(
 		ExtraOptionsDialog::ExtraOptionsDialog_Back,
@@ -55,6 +34,7 @@ ExtraOptionsDialog::ExtraOptionsDialog(LawnApp* theApp, bool theFromGameSelector
 		IMAGE_OPTIONS_BACKTOGAMEBUTTON2
 	);
 	mMoneyButton = MakeButton(ExtraOptionsDialog::ExtraOptionsDialog_Money, this, "[MONEY_BUTTON]");
+	mDifficultyButton = MakeButton(ExtraOptionsDialog::ExtraOptionsDialog_Difficulty, this, "[DIFFICULTY_BUTTON]");
 
 	mBackButton->mTranslateX = 0;
 	mBackButton->mTranslateY = 0;
@@ -75,7 +55,7 @@ ExtraOptionsDialog::~ExtraOptionsDialog()
 	delete mDebugCheckbox;
 	delete mAutoCollectionCheckbox;
 	delete mHealthbarCheckbox;
-	delete mHardmodeCheckbox;
+	delete mDifficultyButton;
 	delete mMoneyButton;
 }
 
@@ -92,7 +72,7 @@ void ExtraOptionsDialog::AddedToManager(Sexy::WidgetManager* theWidgetManager)
 	AddWidget(mDebugCheckbox);
 	AddWidget(mAutoCollectionCheckbox);
 	AddWidget(mHealthbarCheckbox);
-	AddWidget(mHardmodeCheckbox);
+	AddWidget(mDifficultyButton);
 	AddWidget(mMoneyButton);
 }
 
@@ -103,7 +83,7 @@ void ExtraOptionsDialog::RemovedFromManager(Sexy::WidgetManager* theWidgetManage
 	RemoveWidget(mDebugCheckbox);
 	RemoveWidget(mAutoCollectionCheckbox);
 	RemoveWidget(mHealthbarCheckbox);
-	RemoveWidget(mHardmodeCheckbox);
+	RemoveWidget(mDifficultyButton);
 	RemoveWidget(mMoneyButton);
 }
 
@@ -113,8 +93,10 @@ void ExtraOptionsDialog::Resize(int theX, int theY, int theWidth, int theHeight)
 	mDebugCheckbox->Resize(100, 136, 135, 40);
 	mAutoCollectionCheckbox->Resize(mDebugCheckbox->mX, mDebugCheckbox->mY + 45, 135, 40);
 	mHealthbarCheckbox->Resize(mDebugCheckbox->mX, mAutoCollectionCheckbox->mY + 45, 135, 40);
-	mHardmodeCheckbox->Resize(mDebugCheckbox->mX, mHealthbarCheckbox->mY + 45, 135, 40);
-	mMoneyButton->Resize(107, mHardmodeCheckbox->mY + 45, 209, 46);
+
+	mDifficultyButton->Resize(107, mHealthbarCheckbox->mY + 45, 209, 46);
+	mMoneyButton->Resize(mDifficultyButton->mX, mDifficultyButton->mY + 45, mDifficultyButton->mWidth, mDifficultyButton->mHeight);
+
 	mBackButton->Resize(30, 381, mBackButton->mWidth, mBackButton->mHeight);
 }
 
@@ -133,7 +115,6 @@ void ExtraOptionsDialog::Draw(Sexy::Graphics* g)
 	PvzpDrawString(g, mApp->GetString("OPTIONS_AUTOCOLLECTION", "Sun & Coin Auto"), mAutoCollectionCheckbox->mX+45, mAutoCollectionCheckbox->mY+15, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
 	PvzpDrawString(g, mApp->GetString("OPTIONS_AUTOCOLLECTION", "Collection"), mAutoCollectionCheckbox->mX+45, mAutoCollectionCheckbox->mY+35, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
 	PvzpDrawString(g, mApp->GetString("OPTIONS_HEALTHBAR", "Healthbars"), mHealthbarCheckbox->mX+45, mHealthbarCheckbox->mY+25, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
-	PvzpDrawString(g, mApp->GetString("OPTIONS_HARDMODE", "Hardmode"), mHardmodeCheckbox->mX+45, mHardmodeCheckbox->mY+25, FONT_DWARVENTODCRAFT18, Color(255,0,0), DrawStringJustification::DS_ALIGN_LEFT);
 
 	if (aFontScale != 1.0f)
 		g->SetScale(1.0f, 1.0f, 0.0f, 0.0f);
@@ -157,9 +138,6 @@ void ExtraOptionsDialog::CheckboxChecked(int theId, bool checked)
 			break;
 		case ExtraOptionsDialog::ExtraOptionsDialog_Healthbar:
 			mApp->mHealthbarEnabled = !mApp->mHealthbarEnabled;
-			break;
-		case ExtraOptionsDialog::ExtraOptionsDialog_Hardmode:
-			mApp->mHardmode = !mApp->mHardmode;
 			break;
 	}
 }
@@ -199,6 +177,10 @@ void ExtraOptionsDialog::ButtonDepress(int theId)
 		break;
 	case (ExtraOptionsDialog::ExtraOptionsDialog_Money):
 		mApp->mPlayerInfo->AddCoins(99999);
+		break;
+	case (ExtraOptionsDialog::ExtraOptionsDialog_Difficulty):
+		mApp->KillDialog(Dialogs::DIALOG_EXTRAOPTIONS);
+		mApp->DoDifficultyDialog(mFromGameSelector);
 		break;
 	}
 }

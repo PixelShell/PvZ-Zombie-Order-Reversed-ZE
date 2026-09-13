@@ -25,6 +25,7 @@
 #include <SDL.h>
 #include "Common.h"
 #include "ConstEnums.h"
+#include "SexyAppBase.h"
 #include "ZenGarden.h"
 #include "BoardInclude.h"
 #include "LawnCommon.h"
@@ -1258,7 +1259,7 @@ void Board::InitZombieWaves()
 		mZombieCountDown = ZOMBIE_COUNTDOWN_FIRST_WAVE;
 	}
 
-	if (!mApp->mHardmode)
+	if (mApp->mDifficulty <= GameDifficulty::DIFFICULTY_HARD)
 		mZombieCountDown *= 4;
 
 	mZombieHealthWaveStart = 0;

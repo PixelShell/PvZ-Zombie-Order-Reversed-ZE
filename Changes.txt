@@ -1,7 +1,20 @@
-- Zomboss starts with 800 Hp on 1-1 and gets an extra 800 on every level of adventure mode until he reaches his original hp on the last level. On minigames he has 60K hp.
+- Zomboss starts with 800 Hp on 1-1 and gets an extra 800 on every level of adventure mode until he reaches his original hp on the last level. On minigames he has 60K hp. (All difficulties)
 
 - Zomboss fireballs can be destroyed by snowpeas while iceballs can be destroyed by any explosives and fire peas.
+(All difficulties)
 
-- Wallnuts on Wallnut Bowling deals 500 damage instead of an instakill worth of damage to zombies that don't originally exist on the level.
+- 4x time before the first zombie appears (Hard difficulty or below)
 
-- 4x time before the first zombie appears (disabled on hardmode)
+- Sunshrooms grow instantly (Hard difficulty or below)
+
+- As long as Zomboss is alive all waves are stalled to the maximum (25 seconds) (Normal difficulty or below)
+
+- Extra starting sun (100 on Normal, 250 on Easy)
+
+- Zomboss is perma-slowed (Easy only)
+
+
+
+Level specific modifications:
+
+- Wallnuts on Wallnut Bowling deals 500 damage instead of an instakill worth of damage to zombies that don't originally exist on the level. (All difficulties)

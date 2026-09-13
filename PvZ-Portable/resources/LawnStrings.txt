@@ -9,3 +9,9 @@ Back
 
 [MONEY_BUTTON]
 Set Max Money
+
+[DIFFICULTY_BUTTON]
+Set Difficulty
+
+[DIFFICULTY_HEADER]
+Select Difficulty

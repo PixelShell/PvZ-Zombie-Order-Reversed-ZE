@@ -26,6 +26,7 @@
 //#define SEXY_PERF_ENABLED
 //#define SEXY_MEMTRACE
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <fstream>
@@ -1107,10 +1108,10 @@ void SexyAppBase::WriteToRegistry()
 	RegistryWriteInteger("PreferredY", mPreferredY);
 	RegistryWriteInteger("CustomCursors", mCustomCursorsEnabled ? 1 : 0);
 	RegistryWriteInteger("InProgress", 0);
+	RegistryWriteInteger("Difficulty", mDifficulty);
 	RegistryWriteBoolean("WaitForVSync", mWaitForVSync);
 	RegistryWriteBoolean("AutoCollect", mAutoCollect);
 	RegistryWriteBoolean("HealthbarEnabled", mHealthbarEnabled);
-	RegistryWriteBoolean("Hardmode", mHardmode);
 }
 
 bool SexyAppBase::RegistryEraseKey(const std::string& _theKeyName)
@@ -1365,13 +1366,15 @@ void SexyAppBase::ReadFromRegistry()
 	RegistryReadInteger("PreferredX", &mPreferredX);
 	RegistryReadInteger("PreferredY", &mPreferredY);
 
+	RegistryReadInteger("Difficulty", &anInt);
+	mDifficulty = static_cast<GameDifficulty>(anInt);
+
 	if (RegistryReadInteger("CustomCursors", &anInt))
 		EnableCustomCursors(anInt != 0);
 
 	RegistryReadBoolean("WaitForVSync", &mWaitForVSync);
 	RegistryReadBoolean("AutoCollect", &mAutoCollect);
 	RegistryReadBoolean("HealthbarEnabled", &mHealthbarEnabled);
-	RegistryReadBoolean("Hardmode", &mHardmode);
 
 	if (RegistryReadInteger("InProgress", &anInt))
 		mLastShutdownWasGraceful = anInt == 0;

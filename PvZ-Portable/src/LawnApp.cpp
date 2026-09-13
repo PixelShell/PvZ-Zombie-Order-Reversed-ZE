@@ -53,6 +53,7 @@
 #include "Lawn/Widget/CreditScreen.h"
 #include "PvzpLib/EffectSystem.h"
 #include "PvzpLib/FilterEffect.h"
+#include "SexyAppBase.h"
 #include "graphics/Graphics.h"
 #include "PvzpLib/PvzpStringFile.h"
 #include "Lawn/Widget/AlmanacDialog.h"
@@ -62,6 +63,7 @@
 #include "Lawn/Widget/ChallengeScreen.h"
 #include "Lawn/Widget/NewOptionsDialog.h"
 #include "Lawn/Widget/ExtraOptionsDialog.h"
+#include "Lawn/Widget/DifficultyDialog.h"
 #include "Lawn/Widget/ZombatarTOS.h"
 #include "Lawn/Widget/SeedChooserScreen.h"
 #include "widget/WidgetManager.h"
@@ -189,7 +191,7 @@ LawnApp::LawnApp()
 	mCrazyDaveMessageIndex = -1;
 	mIsFastMode = false;
 	mSpeedModifier = 2;
-	mHardmode = false;
+	mDifficulty = GameDifficulty::DIFFICULTY_HARD;
 
 	#ifdef PVZ_DEBUG
     mCheatKeys = true;
@@ -724,6 +726,14 @@ void LawnApp::DoExtraOptions(bool theFromGameSelector)
 	ExtraOptionsDialog* aDialog = new ExtraOptionsDialog(this, theFromGameSelector);
 	CenterDialog(aDialog, IMAGE_OPTIONS_MENUBACK->mWidth, IMAGE_OPTIONS_MENUBACK->mHeight);
 	AddDialog(Dialogs::DIALOG_EXTRAOPTIONS, aDialog);
+	mWidgetManager->SetFocus(aDialog);
+}
+
+void LawnApp::DoDifficultyDialog(bool theFromGameSelector)
+{
+	DifficultyDialog* aDialog = new DifficultyDialog(this, theFromGameSelector);
+	CenterDialog(aDialog, aDialog->mWidth, aDialog->mHeight);
+	AddDialog(Dialogs::DIALOG_DIFFICULTY, aDialog);
 	mWidgetManager->SetFocus(aDialog);
 }
 

@@ -1710,7 +1710,7 @@ void Board::StartLevel()
 		return;
 	mApp->mMusic->StartGameMusic();
 
-	mBossSpawned = false;
+	mBossSpawned = GetBossZombie();
 }
 
 LawnMower* Board::GetBottomLawnMower()
@@ -2671,7 +2671,11 @@ Zombie* Board::AddZombieInRow(ZombieType theZombieType, int theRow, int theFromW
 	{
 		if(theZombieType != ZombieType::ZOMBIE_NORMAL || !mBossSpawned)
 		{
-			theZombieType = ZombieType(ZombieType::NUM_CACHED_ZOMBIE_TYPES - 10 - theZombieType);
+			if (theZombieType <= 25)
+				theZombieType = ZombieType(ZombieType::NUM_CACHED_ZOMBIE_TYPES - 10 - theZombieType);
+			else
+				theZombieType = ZombieType(ZombieType::NUM_CACHED_ZOMBIE_TYPES - theZombieType + 23);
+
 			if (theZombieType == ZombieType::ZOMBIE_BOSS)
 			{
 				mBossSpawned = true;
@@ -4867,6 +4871,10 @@ void Board::SetupBungeeDrop(BungeeDropGrid* theBungeeDropGrid)
 
 void Board::BungeeDropZombie(BungeeDropGrid* theBungeeDropGrid, ZombieType theZombieType)
 {
+	// Since all bungees are newspapers they can't spawn zombies
+	Zombie* aZombie = AddZombie(ZombieType::ZOMBIE_BUNGEE, mCurrentWave);
+
+	/*
 	PvzpWeightedGridArray* aGrid = PvzpPickFromWeightedGridArray(theBungeeDropGrid->mGridArray, theBungeeDropGrid->mGridArrayCount);
 	aGrid->mWeight = 1;
 
@@ -4874,7 +4882,7 @@ void Board::BungeeDropZombie(BungeeDropGrid* theBungeeDropGrid, ZombieType theZo
 	Zombie* aZombie = AddZombie(theZombieType, mCurrentWave);
 	PVZP_ASSERT(aBungeeZombie && aZombie);
 
-	aBungeeZombie->BungeeDropZombie(aZombie, aGrid->mX, aGrid->mY);
+	aBungeeZombie->BungeeDropZombie(aZombie, aGrid->mX, aGrid->mY);*/
 }
 
 void Board::SpawnZombiesFromSky()

@@ -2826,15 +2826,15 @@ ZombieID Zombie::SummonBackupDancer(int theRow, int thePosX)
 	aZombie->mPosX = thePosX;
 	aZombie->mPosY = GetPosYBasedOnRow(theRow);
 	aZombie->SetRow(theRow);
-	aZombie->mX = static_cast<int>(aZombie->mPosX);
-	aZombie->mY = static_cast<int>(aZombie->mPosY);
+	//aZombie->mX = static_cast<int>(aZombie->mPosX);
+	//aZombie->mY = static_cast<int>(aZombie->mPosY);
 
-	aZombie->mAltitude = ZOMBIE_BACKUP_DANCER_RISE_HEIGHT;
-	aZombie->mZombiePhase = ZombiePhase::PHASE_DANCER_RISING;
-	aZombie->mPhaseCounter = 150;
+	//aZombie->mAltitude = ZOMBIE_BACKUP_DANCER_RISE_HEIGHT;
+	//aZombie->mZombiePhase = ZombiePhase::PHASE_DANCER_RISING;
+	//aZombie->mPhaseCounter = 150;
 	aZombie->mRelatedZombieID = mBoard->ZombieGetID(this);
 
-	aZombie->SetAnimRate(0.0f);
+	//aZombie->SetAnimRate(0.0f);
 	aZombie->mMindControlled = mMindControlled;
 
 	int aParticleX = static_cast<int>(aZombie->mPosX) + 60;
@@ -6927,7 +6927,7 @@ void Zombie::PoolSplash(bool theInToPoolSound)
 
 void Zombie::CheckForPool()
 {
-	if (!Zombie::ZombieTypeCanGoInPool(mZombieType) || IsFlying())
+	if (/*!Zombie::ZombieTypeCanGoInPool(mZombieType)*/mZombieType == ZombieType::ZOMBIE_BUNGEE  || IsFlying())
 	{
 		return;
 	}
@@ -7151,7 +7151,7 @@ bool Zombie::TrySpawnLevelAward()
 
 	if (mApp->IsFinalBossLevel())
 	{
-		if (mZombieType != ZombieType::ZOMBIE_BOSS)
+		if (mZombieType != ZombieType::ZOMBIE_NORMAL)
 		{
 			return false;
 		}
@@ -8191,6 +8191,9 @@ void Zombie::SetRow(int theRow)
 
 void Zombie::RiseFromGrave(int theCol, int theRow)
 {
+	if (mZombieType == ZombieType::ZOMBIE_BOSS || mZombieType == ZombieType::ZOMBIE_LADDER) { // These crash the game
+		return;
+	}
 	PVZP_ASSERT(mZombiePhase == ZombiePhase::PHASE_ZOMBIE_NORMAL);
 
 	mPosX = mBoard->GridToPixelX(theCol, mRow) - 25;
@@ -10272,6 +10275,9 @@ void Zombie::BossStartDeath()
 
 void Zombie::UpdateBoss()
 {
+	if (mApp->mGameScene != GameScenes::SCENE_PLAYING)
+		return;
+
 	Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
 	if (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO)
 	{

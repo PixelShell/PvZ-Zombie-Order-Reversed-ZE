@@ -21,6 +21,7 @@
 
 #include "Coin.h"
 #include "Board.h"
+#include "ConstEnums.h"
 #include "LawnCommon.h"
 #include "Plant.h"
 #include "Zombie.h"
@@ -582,10 +583,10 @@ int Challenge::BeghouledTwistValidMove(int theGridX, int theGridY, BeghouledBoar
 		return false;
 
 	return
-		theBoardState->mSeedType[theGridX][theGridY] != SEED_NONE &&
-		theBoardState->mSeedType[theGridX + 1][theGridY] != SEED_NONE &&
-		theBoardState->mSeedType[theGridX][theGridY + 1] != SEED_NONE &&
-		theBoardState->mSeedType[theGridX + 1][theGridY + 1] != SEED_NONE;
+		(mBoard->GetTopPlantAt(theGridX, theGridY, PlantPriority::TOPPLANT_ANY) && !mBoard->GetTopPlantAt(theGridX, theGridY, PlantPriority::TOPPLANT_ANY)->mSquished) &&
+		(mBoard->GetTopPlantAt(theGridX + 1, theGridY, PlantPriority::TOPPLANT_ANY) && !mBoard->GetTopPlantAt(theGridX + 1, theGridY, PlantPriority::TOPPLANT_ANY)->mSquished) &&
+		(mBoard->GetTopPlantAt(theGridX, theGridY + 1, PlantPriority::TOPPLANT_ANY) && !mBoard->GetTopPlantAt(theGridX, theGridY + 1, PlantPriority::TOPPLANT_ANY)->mSquished) &&
+		(mBoard->GetTopPlantAt(theGridX + 1, theGridY + 1, PlantPriority::TOPPLANT_ANY) && !mBoard->GetTopPlantAt(theGridX + 1, theGridY + 1, PlantPriority::TOPPLANT_ANY)->mSquished);
 }
 
 int Challenge::BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, BeghouledBoardState* theBoardState)
@@ -1231,11 +1232,18 @@ void Challenge::MouseDownWhackAZombie(int theX, int theY)
 
 			aTopZombie->TakeHelmDamage(900, 0U);
 		}
+		else if (aTopZombie->mZombieType == ZombieType::ZOMBIE_BOSS)
+		{
+			if (aTopZombie->mZombiePhase == ZombiePhase::PHASE_BOSS_HEAD_IDLE_AFTER_SPIT || aTopZombie->mZombiePhase == ZombiePhase::PHASE_BOSS_HEAD_IDLE_BEFORE_SPIT) {
+				mApp->PlayFoley(FOLEY_SHIELD_HIT);
+				aTopZombie->TakeDamage(900, 0);
+			}
+		}
 		else
 		{
 			mApp->PlayFoley(FOLEY_BONK);
 			mApp->AddPvzpParticle(theX - 3, theY + 9, RENDER_LAYER_ABOVE_UI, PARTICLE_POW);
-			aTopZombie->DieWithLoot();
+			aTopZombie->TakeDamage(900, 0);
 			mBoard->ClearCursor();
 		}
 	}
@@ -1902,10 +1910,10 @@ void Challenge::UpdateConveyorBelt()
 				}
 			}
 
-			if (aSeedType == SEED_FLOWERPOT && mBoard->GetBossZombie()->mZombiePhase == PHASE_BOSS_DROP_RV)
+			/*if (aSeedType == SEED_FLOWERPOT && mBoard->GetBossZombie()->mZombiePhase == PHASE_BOSS_DROP_RV)
 			{
 				aSeedPick.mWeight = 500;
-			}
+			}*/
 		}
 
 		if (aSeedPickCount > 2)
@@ -4133,7 +4141,13 @@ void Challenge::ScaryPotterOpenPot(GridItem* theScaryPot)
 		mBoard->AddCoin(aXPos + 20, aYPos, COIN_USABLE_SEED_PACKET, COIN_MOTION_FROM_PLANT)->mUsableSeedType = theScaryPot->mSeedType;
 		break;
 	case SCARYPOT_ZOMBIE:
-		mBoard->AddZombieInRow(theScaryPot->mZombieType, theScaryPot->mGridY, 0)->mPosX = aXPos;
+		if (theScaryPot->mZombieType == ZombieType::ZOMBIE_NORMAL)
+		{
+			mBoard->AddZombieInRow(theScaryPot->mZombieType, theScaryPot->mGridY, 0);
+		}
+		else {
+			mBoard->AddZombieInRow(theScaryPot->mZombieType, theScaryPot->mGridY, 0)->mPosX = aXPos;
+		}
 		break;
 	case SCARYPOT_SUN:
 	{
@@ -4287,7 +4301,7 @@ void Challenge::IZombiePlaceZombie(ZombieType theZombieType, int theGridX, int t
 		aZombie->mPosY = aZombie->GetPosYBasedOnRow(theGridY);
 		aZombie->mRenderOrder = Board::MakeRenderOrder(RENDER_LAYER_GRAVE_STONE, theGridY, 7);
 	}
-	else
+	else if (theZombieType != ZombieType::ZOMBIE_NORMAL)
 	{
 		aZombie->mPosX = mBoard->GridToPixelX(theGridX, theGridY) - 30.0f;
 	}

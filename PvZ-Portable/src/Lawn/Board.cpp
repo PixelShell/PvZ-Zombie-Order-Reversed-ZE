@@ -1395,7 +1395,10 @@ void Board::InitLevel()
 	}
 	else if (aGameMode == GameMode::GAMEMODE_CHALLENGE_LAST_STAND)
 	{
-		mSunMoney = 5000;
+		if (mApp->mDifficulty == GameDifficulty::DIFFICULTY_UNALTERED)
+			mSunMoney = 5000;
+		else
+		 	mSunMoney = 9990;
 	}
 	else if (mApp->IsIZombieLevel())
 	{
@@ -1409,6 +1412,11 @@ void Board::InitLevel()
 	{
 		mSunMoney = 50;
 	}
+
+	if (mApp->mDifficulty == GameDifficulty::DIFFICULTY_NORMAL)
+		mSunMoney += 100;
+	else if (mApp->mDifficulty == GameDifficulty::DIFFICULTY_EASY)
+		mSunMoney += 200;
 
 	memset(mRowPickingArray, 0, sizeof(mRowPickingArray));
 	for (int aRow = 0; aRow < MAX_GRID_SIZE_Y; aRow++)
@@ -1900,6 +1908,7 @@ void Board::FadeOutLevel()
 	if (mApp->IsScaryPotterLevel() && !IsFinalScaryPotterStage())
 	{
 		mNextSurvivalStageCounter = 500;
+		mBossSpawned = false;
 		if (mApp->IsAdventureMode())
 		{
 			ClearAdvice(AdviceType::ADVICE_NONE);
@@ -5427,7 +5436,8 @@ void Board::UpdateZombieSpawning()
 		return;
 	}
 
-	if (mZombieCountDown > 200 && mZombieCountDownStart - mZombieCountDown > 400 && TotalZombiesHealthInWave(mCurrentWave - 1) <= mZombieHealthToNextWave)
+	if ((mZombieCountDown > 200 && mZombieCountDownStart - mZombieCountDown > 400 && TotalZombiesHealthInWave(mCurrentWave - 1) <= mZombieHealthToNextWave)
+		 && (mApp->mDifficulty > GameDifficulty::DIFFICULTY_NORMAL || !GetBossZombie()))
 	{
 		mZombieCountDown = 200;
 	}

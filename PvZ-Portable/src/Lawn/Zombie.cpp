@@ -32,6 +32,7 @@
 #include "Projectile.h"
 #include "../LawnApp.h"
 #include "../Resources.h"
+#include "SexyAppBase.h"
 #include "System/PlayerInfo.h"
 #include "System/Zombatar.h"
 #include "System/Music.h"
@@ -44,6 +45,7 @@
 #include "../PvzpLib/PvzpParticle.h"
 #include <algorithm>
 #include <cstdint>
+#include <immintrin.h>
 
 constexpr const int ZOMBIE_START_RANDOM_OFFSET = 40;
 constexpr const int BUNGEE_ZOMBIE_HEIGHT = 3000;
@@ -237,6 +239,9 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 	}
 	PickRandomSpeed();
 	mBodyHealth = 270;
+
+	if (mApp->mDifficulty == GameDifficulty::DIFFICULTY_EASY)
+		mChilledCounter = 1500;
 
 	const ZombieDefinition& aZombieDef = GetZombieDefinition(mZombieType);
 	RenderLayer aRenderLayer = RenderLayer::RENDER_LAYER_ZOMBIE;
@@ -693,7 +698,15 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 		mZombieRect = Rect(700, 80, 90, 430);
 		mZombieAttackRect = Rect(0, 0, 0, 0);
 		aRenderLayer = RenderLayer::RENDER_LAYER_TOP;
-		mBodyHealth = mApp->IsAdventureMode() ? mBoard->mLevel * 800 : 60000;
+
+		if (mApp->IsScaryPotterLevel())
+			mBodyHealth = 3600;
+		else
+			mBodyHealth = mApp->IsAdventureMode() ? mBoard->mLevel * 800 : 60000;
+
+		if (mApp->IsFirstTimeAdventureMode() && mApp->mDifficulty <= GameDifficulty::DIFFICULTY_HARD && mBoard->mLevel >= 41 && mBoard->mLevel <= 43)
+			mBodyHealth -= 29200; // Nerfed health for the first 3 roof levels
+
 		if (IsOnBoard())
 		{
 			PlayZombieReanim("anim_enter", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 12.0f);
@@ -706,6 +719,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 			PlayZombieReanim("anim_head_idle", ReanimLoopType::REANIM_LOOP, 0, 12.0f);
 		}
 		BossSetupReanim();
+
 		break;
 
 	case ZombieType::ZOMBIE_PEA_HEAD:
@@ -4624,7 +4638,7 @@ void Zombie::UpdatePlaying()
 			AddAttachedParticle(75, 106, ParticleEffect::PARTICLE_ICE_TRAP_RELEASE);
 		}
 	}
-	if (mChilledCounter > 0)
+	if (mChilledCounter > 0 && (mApp->mDifficulty > GameDifficulty::DIFFICULTY_EASY || mZombieType != ZombieType::ZOMBIE_BOSS))
 	{
 		mChilledCounter--;
 		if (mChilledCounter == 0)
@@ -6467,7 +6481,7 @@ Zombie* Zombie::FindZombieTarget()
 			aZombie->mZombiePhase != ZombiePhase::PHASE_BUNGEE_RISING &&
 			aZombie->mZombieHeight != ZombieHeight::HEIGHT_GETTING_BUNGEE_DROPPED &&
 			!aZombie->IsDeadOrDying() &&
-			aZombie->mRow == mRow)
+			(aZombie->mRow == mRow || aZombie->mZombieType == ZombieType::ZOMBIE_BOSS))
 		{
 			Rect aZombieRect = aZombie->GetZombieRect();
 			int aOverlap = GetRectOverlap(aAttackRect, aZombieRect);
@@ -7163,7 +7177,8 @@ bool Zombie::TrySpawnLevelAward()
 			return false;
 		}
 	}
-	else if (mApp->IsContinuousChallenge() || mBoard->mCurrentWave < mBoard->mNumWaves || mBoard->AreEnemyZombiesOnScreen())
+	else if ((mBoard->mLevel != 1 || mApp->HasFinishedAdventure() || mZombieType != ZombieType::ZOMBIE_BOSS)
+	&& (mApp->IsContinuousChallenge() || mBoard->mCurrentWave < mBoard->mNumWaves || mBoard->AreEnemyZombiesOnScreen()))
 	{
 		return false;
 	}
@@ -8661,7 +8676,7 @@ void Zombie::RemoveColdEffects()
 		RemoveIceTrap();
 	}
 
-	if (mChilledCounter > 0)
+	if (mChilledCounter > 0 && (mApp->mDifficulty > GameDifficulty::DIFFICULTY_EASY || mZombieType != ZombieType::ZOMBIE_BOSS))
 	{
 		mChilledCounter = 0;
 		UpdateAnimSpeed();
@@ -9836,15 +9851,16 @@ void Zombie::BossSpawnAttack()
 void Zombie::BossSpawnContact()
 {
 	ZombieType aZombieType;
-	if (mZombieAge < 3500)
+	int anAdjustedAge = mApp->mDifficulty == GameDifficulty::DIFFICULTY_EASY ? mZombieAge / 2 : mZombieAge;
+	if (anAdjustedAge < 3500)
 	{
 		aZombieType = ZombieType::ZOMBIE_NORMAL;
 	}
-	else if (mZombieAge < 8000)
+	else if (anAdjustedAge < 8000)
 	{
 		aZombieType = ZombieType::ZOMBIE_TRAFFIC_CONE;
 	}
-	else if (mZombieAge < 12500)
+	else if (anAdjustedAge < 12500)
 	{
 		aZombieType = ZombieType::ZOMBIE_PAIL;
 	}
@@ -10028,14 +10044,14 @@ void Zombie::BossHeadSpit()
 		mBossFireBallReanimID = ReanimationID::REANIMATIONID_NULL;
 	}
 
-	mFireballHp = 3;
+	mFireballHp = (mBoard->StageHasRoof() && mApp->mDifficulty != GameDifficulty::DIFFICULTY_UNALTERED) ? 1 : 3;
 
 	mZombiePhase = ZombiePhase::PHASE_BOSS_HEAD_SPIT;
 
 	mFireballRow = RandRangeInt(0, mBoard->StageHas6Rows() ? 5 : 4);  // pool boss compatibility
 	//mFireballRow = RandRangeInt(0, 4);
 
-	mIsFireBall = RandRangeInt(0, 1) == 0;
+	mIsFireBall = (mBoard->mLevel == 30 && mApp->mDifficulty <= GameDifficulty::DIFFICULTY_HARD) ? false : RandRangeInt(0, 1) == 0;
 
 	const char* aTrackName;
 	switch (mFireballRow)
@@ -10268,6 +10284,8 @@ void Zombie::BossStartDeath()
 	mApp->PlaySample(SOUND_BOSSEXPLOSION);
 	mApp->PlayFoley(FoleyType::FOLEY_GARGANTUDEATH);
 
+	mChilledCounter = 0;
+	UpdateAnimSpeed();
 	mZombieFade = 1000;
 
 	BossDie();
@@ -10282,8 +10300,7 @@ void Zombie::UpdateBoss()
 	if (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO)
 	{
 		if (aBodyReanim->ShouldTriggerTimedEvent(0.24f) || aBodyReanim->ShouldTriggerTimedEvent(0.79f))
-		{
-			mApp->PlayFoley(FoleyType::FOLEY_THUMP);
+		{			mApp->PlayFoley(FoleyType::FOLEY_THUMP);
 			mBoard->ShakeBoard(1, 4);
 		}
 		return;
@@ -10291,7 +10308,7 @@ void Zombie::UpdateBoss()
 
 	Reanimation* aHeadReanim = mApp->ReanimationGet(mSpecialHeadReanimID);
 	UpdateBossFireball();
-	if (mIceTrapCounter == 0)
+	if (mIceTrapCounter == 0 && (mApp->mDifficulty > GameDifficulty::DIFFICULTY_EASY || mApp->mUpdateCount % 2 == 0))
 	{
 		if (mSummonCounter > 0)
 		{
@@ -10508,7 +10525,7 @@ void Zombie::UpdateBoss()
 	}
 	else if (mZombiePhase == ZombiePhase::PHASE_BOSS_HEAD_LEAVE)
 	{
-		if (aBodyReanim->ShouldTriggerTimedEvent(0.23f))
+		if (aBodyReanim->ShouldTriggerTimedEvent(0.23f) && mApp->mDifficulty > GameDifficulty::DIFFICULTY_EASY)
 		{
 			mChilledCounter = 0;
 			UpdateAnimSpeed();

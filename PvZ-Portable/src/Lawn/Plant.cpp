@@ -22,6 +22,7 @@
 #include "Coin.h"
 #include "Plant.h"
 #include "Board.h"
+#include "ConstEnums.h"
 #include "SexyAppBase.h"
 #include "Zombie.h"
 #include "Cutscene.h"
@@ -387,9 +388,9 @@ void Plant::PlantInitialize(int theGridX, int theGridY, SeedType theSeedType, Se
 
 		mState = PlantState::STATE_SUNSHROOM_SMALL;
 		if (mApp->mDifficulty <= GameDifficulty::DIFFICULTY_HARD)
-			mStateCountdown = 12000;
+			mStateCountdown = 1;
 		else
-		 	mStateCountdown = 1;
+		 	mStateCountdown = 12000;
 
 		break;
 	}
@@ -4716,6 +4717,12 @@ void Plant::Fire(Zombie* theTargetZombie, int theRow, PlantWeapon thePlantWeapon
 			aRangeX = 700.0f - aOriginX;
 			aRangeY = 0.0f;
 		}
+
+		if (mSeedType == SeedType::SEED_WINTERMELON && mBoard->GetBossZombie() && mBoard->GetBossZombie()->mFireballRow == mRow)
+		{
+			aRangeX = mBoard->GetBossZombie()->GetBossFireballPosX() - aOriginX - 30.0f;
+		}
+
 		if (aRangeX < 40.0f)
 		{
 			aRangeX = 40.0f;

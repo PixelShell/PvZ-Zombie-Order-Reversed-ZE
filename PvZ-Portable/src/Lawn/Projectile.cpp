@@ -346,7 +346,7 @@ void Projectile::CheckForCollision()
 				
 				if ((aDistX * aDistX) + (aDistY * aDistY) <= (40 * 40))
 				{
-					if((mProjectileType == ProjectileType::PROJECTILE_SNOWPEA && aBoss->mIsFireBall)
+					if((mProjectileType == ProjectileType::PROJECTILE_SNOWPEA || mProjectileType == ProjectileType::PROJECTILE_WINTERMELON && aBoss->mIsFireBall)
 					|| (mProjectileType == ProjectileType::PROJECTILE_FIREBALL && !aBoss->mIsFireBall))
 					{
 						aBoss->DamageBossFireball();
@@ -528,6 +528,22 @@ void Projectile::DoSplashDamage(Zombie* theZombie)
 			}
 		}
 	}
+
+	Zombie* aBoss = mBoard->GetBossZombie();
+	if (aBoss && mProjectileType == ProjectileType::PROJECTILE_WINTERMELON)
+		{
+			Reanimation* aFireballReanim = mApp->ReanimationTryToGet(aBoss->mBossFireBallReanimID);
+			if (aFireballReanim != nullptr)
+			{
+				float aDistX = mPosX - aBoss->GetBossFireballPosX();
+				float aDistY = mPosY - aBoss->GetBossFireballPosY();
+				
+				if ((aDistX * aDistX) + (aDistY * aDistY) <= (160 * 160))
+				{
+					aBoss->DamageBossFireball();
+				}
+			}	
+		}
 }
 
 void Projectile::UpdateLobMotion()

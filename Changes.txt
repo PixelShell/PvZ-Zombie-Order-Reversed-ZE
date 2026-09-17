@@ -1,7 +1,11 @@
 - Zomboss starts with 800 Hp on 1-1 and gets an extra 800 on every level of adventure mode until he reaches his original hp on the last level. On minigames he has 60K hp. (All difficulties)
 
-- Zomboss fireballs can be destroyed by snowpeas while iceballs can be destroyed by any explosives and fire peas.
+- Zomboss fireballs can be destroyed by snowpeas and wintermelons while iceballs can be destroyed by any explosives and fire peas.
 (All difficulties)
+
+- For vasebreaker levels zomboss always has 3600 hp (All difficulties)
+
+- All conveyor belt levels has the same conveyor speed as 5-10 (All difficulties)
 
 - 4x time before the first zombie appears (Hard difficulty or below)
 
@@ -9,12 +13,29 @@
 
 - As long as Zomboss is alive all waves are stalled to the maximum (25 seconds) (Normal difficulty or below)
 
-- Extra starting sun (100 on Normal, 250 on Easy)
+- All conveyor belts are faster (Normal or below, even faster with Easy)
+
+- Extra starting sun (+100 on Normal, +200 on Easy)
 
 - Zomboss is perma-slowed (Easy only)
 
+- All zombies slowed for 15 seconds on spawn (Easy only)
 
 
 Level specific modifications:
 
 - Wallnuts on Wallnut Bowling deals 500 damage instead of an instakill worth of damage to zombies that don't originally exist on the level. (All difficulties)
+
+- Whack a zombie hammer deals 900 damage by default. (All difficulties)
+
+- 4-10 has jalapeno and iceshroom added to the conveyor (All difficulties)
+
+- invisighoul has jalapeno added to the conveyor (All difficulties)
+
+- column like you see em has winter melon added to the conveyor (All difficulties)
+
+- On 3-10 zomboss can't spawn fireballs, only iceballs (Hard or below)
+
+- last stand has 9990 starting sun (Hard or below)
+
+- For the first 3 roof levels zomboss health reduced by 29200 (Hard or below)

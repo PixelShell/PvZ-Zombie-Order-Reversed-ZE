@@ -72,18 +72,31 @@ void DifficultyDialog::Draw(Sexy::Graphics* g)
 		case (GameDifficulty::DIFFICULTY_EASY):
 			aTextColor = Color(0,255,0);
 			PvzpDrawString(g, 	"Easy", 314, 140, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_CENTER);
+			PvzpDrawString(g, 	"- All buffs from Normal", 40, 170, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
+			PvzpDrawString(g, 	"- More extra starting sun and conveyor speed", 40, 200, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
+			PvzpDrawString(g, 	"- Zomboss is slowed permanently", 40, 230, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
+			PvzpDrawString(g, 	"- Zombies are slowed on spawn for 15 seconds", 40, 260, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
 			break;
 		case (GameDifficulty::DIFFICULTY_NORMAL):
 			aTextColor = Color(255,255,0);
 			PvzpDrawString(g, 	"Normal", 314, 140, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_CENTER);
+			PvzpDrawString(g, 	"- All buffs from Hard", 40, 170, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
+			PvzpDrawString(g, 	"- Waves are stalled when Zomboss is present", 40, 200, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
+			PvzpDrawString(g, 	"- Faster conveyor belts", 40, 230, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
+			PvzpDrawString(g, 	"- Extra starting sun", 40, 260, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
 			break;
 		case (GameDifficulty::DIFFICULTY_HARD):
 			aTextColor = Color(255,0,0);
 			PvzpDrawString(g, 	"Hard", 314, 140, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_CENTER);
+			PvzpDrawString(g, 	"- 4x time before the first wave", 40, 170, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
+			PvzpDrawString(g, 	"- Sunshrooms grow instantly", 40, 200, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
+			PvzpDrawString(g, 	"- Level specific rebalancing", 40, 230, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
 			break;
 		case (GameDifficulty::DIFFICULTY_UNALTERED):
 			aTextColor = Color(150,0,0);
 			PvzpDrawString(g, 	"Unaltered", 314, 140, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_CENTER);
+			PvzpDrawString(g, 	"- No buffs", 40, 170, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
+			PvzpDrawString(g, 	"- Untested, likely impossible", 40, 200, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_LEFT);
 			break;
 		default:
 			break;

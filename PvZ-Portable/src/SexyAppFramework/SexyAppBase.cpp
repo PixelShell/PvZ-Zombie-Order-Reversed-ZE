@@ -1366,8 +1366,10 @@ void SexyAppBase::ReadFromRegistry()
 	RegistryReadInteger("PreferredX", &mPreferredX);
 	RegistryReadInteger("PreferredY", &mPreferredY);
 
-	RegistryReadInteger("Difficulty", &anInt);
-	mDifficulty = static_cast<GameDifficulty>(anInt);
+	if (RegistryReadInteger("Difficulty", &anInt))
+    	mDifficulty = static_cast<GameDifficulty>(anInt);
+	else
+    	mDifficulty = GameDifficulty::DIFFICULTY_NORMAL;
 
 	if (RegistryReadInteger("CustomCursors", &anInt))
 		EnableCustomCursors(anInt != 0);

@@ -45,7 +45,6 @@
 #include "../PvzpLib/PvzpParticle.h"
 #include <algorithm>
 #include <cstdint>
-#include <immintrin.h>
 
 constexpr const int ZOMBIE_START_RANDOM_OFFSET = 40;
 constexpr const int BUNGEE_ZOMBIE_HEIGHT = 3000;

@@ -1549,7 +1549,8 @@ enum BoardBaseFieldId : uint32_t
 	BOARD_FIELD_COINS_COLLECTED,
 	BOARD_FIELD_DIAMONDS_COLLECTED,
 	BOARD_FIELD_POTTED_PLANTS_COLLECTED,
-	BOARD_FIELD_CHOCOLATE_COLLECTED
+	BOARD_FIELD_CHOCOLATE_COLLECTED,
+	BOARD_FIELD_BOSS_SPAWNED
 };
 
 static void SyncBoardBasePortable(PortableSaveContext& theContext, Board* theBoard)
@@ -1675,6 +1676,7 @@ static void SyncBoardBasePortable(PortableSaveContext& theContext, Board* theBoa
 			case BOARD_FIELD_DIAMONDS_COLLECTED: ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ c.SyncUInt32(theBoard->mDiamondsCollected); }); break;
 			case BOARD_FIELD_POTTED_PLANTS_COLLECTED: ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ c.SyncUInt32(theBoard->mPottedPlantsCollected); }); break;
 			case BOARD_FIELD_CHOCOLATE_COLLECTED: ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ c.SyncUInt32(theBoard->mChocolateCollected); }); break;
+			case BOARD_FIELD_BOSS_SPAWNED: ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ c.SyncBool(theBoard->mBossSpawned); }); break;
 			default: break;
 			}
 		}
@@ -1785,6 +1787,7 @@ static void SyncBoardBasePortable(PortableSaveContext& theContext, Board* theBoa
 		AppendFieldWithSync(aBlob, BOARD_FIELD_DIAMONDS_COLLECTED, [&](PortableSaveContext& c){ c.SyncUInt32(theBoard->mDiamondsCollected); });
 		AppendFieldWithSync(aBlob, BOARD_FIELD_POTTED_PLANTS_COLLECTED, [&](PortableSaveContext& c){ c.SyncUInt32(theBoard->mPottedPlantsCollected); });
 		AppendFieldWithSync(aBlob, BOARD_FIELD_CHOCOLATE_COLLECTED, [&](PortableSaveContext& c){ c.SyncUInt32(theBoard->mChocolateCollected); });
+		AppendFieldWithSync(aBlob, BOARD_FIELD_BOSS_SPAWNED, [&](PortableSaveContext& c){ c.SyncBool(theBoard->mBossSpawned); });
 		WriteTLVBlob(theContext, aBlob);
 	}
 }

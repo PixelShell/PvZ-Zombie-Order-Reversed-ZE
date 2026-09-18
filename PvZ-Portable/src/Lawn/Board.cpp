@@ -7950,7 +7950,7 @@ void Board::KeyChar(char theChar)
 			}
 		}
 	}
-	else if (theChar == '"' && mShowShovel)
+	else if (theChar == '\"' && mShowShovel)
 	{
 		if (mCursorObject->mCursorType != CursorType::CURSOR_TYPE_SHOVEL)
 		{

@@ -346,7 +346,7 @@ void Projectile::CheckForCollision()
 				
 				if ((aDistX * aDistX) + (aDistY * aDistY) <= (40 * 40))
 				{
-					if((mProjectileType == ProjectileType::PROJECTILE_SNOWPEA || mProjectileType == ProjectileType::PROJECTILE_WINTERMELON && aBoss->mIsFireBall)
+					if(((mProjectileType == ProjectileType::PROJECTILE_SNOWPEA || mProjectileType == ProjectileType::PROJECTILE_WINTERMELON) && aBoss->mIsFireBall)
 					|| (mProjectileType == ProjectileType::PROJECTILE_FIREBALL && !aBoss->mIsFireBall))
 					{
 						aBoss->DamageBossFireball();

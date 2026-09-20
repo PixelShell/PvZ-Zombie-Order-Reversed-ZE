@@ -7412,7 +7412,7 @@ void Board::DrawUICoinBank(Graphics* g)
 	if (mCoinBankFadeCount <= 0)
 		return;
 
-	int aPosX = 57;
+	int aPosX = 200; // 57
 	int aPosY = 599 - Sexy::IMAGE_COINBANK->GetHeight();
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN || mApp->mCrazyDaveState != CrazyDaveState::CRAZY_DAVE_OFF)
 	{
@@ -7950,7 +7950,7 @@ void Board::KeyChar(char theChar)
 			}
 		}
 	}
-	else if (theChar == '\"' && mShowShovel)
+	if (theChar == '\"' && mShowShovel)
 	{
 		if (mCursorObject->mCursorType != CursorType::CURSOR_TYPE_SHOVEL)
 		{

@@ -10349,6 +10349,8 @@ void Zombie::UpdateBoss()
 		if (mBodyHealth == 1)
 		{
 			PlayDeathAnim(0U);
+			if (mZombieFade <= 0)
+				BossStartDeath();
 			return;
 		}
 

@@ -2453,6 +2453,10 @@ void Plant::UpdateBowling()
 
 			aZombie->TakeHelmDamage(900, 0U);
 		}
+		else if (!mApp->IsAdventureMode())
+		{
+			aZombie->TakeDamage(900, 0U);
+		}
 		else
 		{
 			aZombie->TakeDamage(500, 0U); // Originally 1800

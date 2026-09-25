@@ -2430,6 +2430,7 @@ void Plant::UpdateBowling()
 		if (mSeedType == SeedType::SEED_GIANT_WALLNUT)
 		{
 			aZombie->TakeDamage(1800, 0U);
+			aZombie->mGiantWallnutCounter = 100;
 		}
 		else if (aZombie->mShieldType == ShieldType::SHIELDTYPE_DOOR && mState != PlantState::STATE_NOTREADY)
 		{
@@ -4904,6 +4905,11 @@ Zombie* Plant::FindTargetZombie(int theRow, PlantWeapon thePlantWeapon)
 				{
 					aWeight += 10000;
 				}
+			}
+
+			if (mSeedType == SeedType::SEED_GIANT_WALLNUT && aZombie->mGiantWallnutCounter > 0)
+			{
+				continue;
 			}
 
 			if (aBestZombie == nullptr || aWeight > aHighestWeight)

@@ -530,7 +530,7 @@ void Projectile::DoSplashDamage(Zombie* theZombie)
 	}
 
 	Zombie* aBoss = mBoard->GetBossZombie();
-	if (aBoss && mProjectileType == ProjectileType::PROJECTILE_WINTERMELON)
+	if (aBoss && aBoss->mIsFireBall && mProjectileType == ProjectileType::PROJECTILE_WINTERMELON)
 		{
 			Reanimation* aFireballReanim = mApp->ReanimationTryToGet(aBoss->mBossFireBallReanimID);
 			if (aFireballReanim != nullptr)

@@ -161,6 +161,7 @@ public:
 	int32_t                         mLastPortalX;
 
 	int32_t							mFireballHp;
+	int32_t							mGiantWallnutCounter; // Invulnerability frames against Giant Wallnut
 
 public:
 	Zombie();

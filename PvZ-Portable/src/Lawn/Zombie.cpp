@@ -228,6 +228,8 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 	mZombatarHeadReanimID = ReanimationID::REANIMATIONID_NULL;
 	mLastPortalX = -1;
 
+	mGiantWallnutCounter = 100;
+
 	for (int i = 0; i < MAX_ZOMBIE_FOLLOWERS; i++)
 	{
 		mFollowerZombieID[i] = ZombieID::ZOMBIEID_NULL;
@@ -4627,6 +4629,9 @@ void Zombie::UpdatePlaying()
 
 		mGroanCounter = Rand(1000) + 500;
 	}
+
+	if (mGiantWallnutCounter > 0)
+		mGiantWallnutCounter--;
 
 	if (mIceTrapCounter > 0)
 	{

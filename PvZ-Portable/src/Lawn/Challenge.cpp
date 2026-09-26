@@ -1959,7 +1959,24 @@ void Challenge::UpdateRainingSeeds()
 	if (mBoard->HasLevelAwardDropped() || --mChallengeStateCounter != 0)
 		return;
 
-	mChallengeStateCounter = RandRangeInt(500, 999);
+	switch (mApp->mDifficulty)
+	{
+		case (DIFFICULTY_EASY):
+		mChallengeStateCounter = RandRangeInt(200,300);
+		break;
+
+		case (DIFFICULTY_NORMAL):
+		mChallengeStateCounter = RandRangeInt(300,400);
+		break;
+
+		case (DIFFICULTY_HARD):
+		mChallengeStateCounter = RandRangeInt(400,500);
+		break;
+
+		default:
+		mChallengeStateCounter = RandRangeInt(500, 999);
+		break;
+	}
 
 	Coin* aCoin = mBoard->AddCoin(RandRangeInt(100, 649), 60, COIN_USABLE_SEED_PACKET, COIN_MOTION_FROM_SKY_SLOW);
 
@@ -1979,6 +1996,12 @@ void Challenge::UpdateRainingSeeds()
 		);
 	if (Rand(100) < PvzpAnimateCurve(0, 18, mBoard->CountPlantByType(SEED_LILYPAD), 30, 1, CURVE_LINEAR))
 		aSeedType = SEED_LILYPAD;
+
+	// Gİve Jalapeno or Iceshroom for fireball/iceball attacks
+	Zombie* aBoss = mBoard->GetBossZombie();
+
+	if (aBoss && mApp->ReanimationTryToGet(aBoss->mBossFireBallReanimID))
+		aSeedType = aBoss->mIsFireBall ? SEED_ICESHROOM : SEED_JALAPENO;
 
 	aCoin->mUsableSeedType = aSeedType;
 }

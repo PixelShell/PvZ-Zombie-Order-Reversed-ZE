@@ -556,10 +556,14 @@ void Challenge::StartLevel()
 	if (aGameMode == GAMEMODE_CHALLENGE_AIR_RAID || aGameMode == GAMEMODE_CHALLENGE_BOBSLED_BONANZA)
 	{
 		mBoard->mZombieCountDown = 4500;
+		if (mApp->mDifficulty <= GameDifficulty::DIFFICULTY_HARD)
+			mBoard->mZombieCountDown *= 4;
 	}
 	if (aGameMode == GAMEMODE_CHALLENGE_POGO_PARTY)
 	{
 		mBoard->mZombieCountDown = 5500;
+		if (mApp->mDifficulty <= GameDifficulty::DIFFICULTY_HARD)
+			mBoard->mZombieCountDown *= 4;
 	}
 	if (aGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM)
 	{
@@ -1835,7 +1839,7 @@ void Challenge::UpdateConveyorBelt()
 	}
 	else if (mApp->mGameMode == GAMEMODE_CHALLENGE_PORTAL_COMBAT)
 	{
-		aSeedPickCount = 6;
+		aSeedPickCount = 7;
 		aSeedPickArray[0].mItem = SEED_PEASHOOTER;
 		aSeedPickArray[0].mWeight = 25;
 		aSeedPickArray[1].mItem = SEED_REPEATER;
@@ -1843,11 +1847,13 @@ void Challenge::UpdateConveyorBelt()
 		aSeedPickArray[2].mItem = SEED_TORCHWOOD;
 		aSeedPickArray[2].mWeight = 10;
 		aSeedPickArray[3].mItem = SEED_CACTUS;
-		aSeedPickArray[3].mWeight = 15;
+		aSeedPickArray[3].mWeight = 5; // 15
 		aSeedPickArray[4].mItem = SEED_WALLNUT;
 		aSeedPickArray[4].mWeight = 15;
 		aSeedPickArray[5].mItem = SEED_CHERRYBOMB;
 		aSeedPickArray[5].mWeight = 15;
+		aSeedPickArray[6].mItem = SEED_ICESHROOM;
+		aSeedPickArray[6].mWeight = 10;
 	}
 	else if (mApp->mGameMode == GAMEMODE_CHALLENGE_COLUMN)
 	{
@@ -3503,6 +3509,9 @@ GridItem* Challenge::GetPortalLeftRight(int theGridX, int theGridY, int theToLef
 
 int Challenge::CanTargetZombieWithPortals(Plant* thePlant, Zombie* theZombie)
 {
+	if (theZombie->mZombieType == ZombieType::ZOMBIE_BOSS)
+		return true;
+
 	int aGridX = thePlant->mPlantCol;
 	int aGridY = thePlant->mRow;
 

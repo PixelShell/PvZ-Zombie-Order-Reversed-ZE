@@ -702,11 +702,16 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 
 		if (mApp->IsScaryPotterLevel())
 			mBodyHealth = 3600;
+		else if (mApp->IsSurvivalMode())
+			mBodyHealth = mApp->IsSurvivalNormal(mApp->mGameMode) ?
+			(mBoard->mChallenge->mSurvivalStage + 1) * 6000 : (mBoard->mChallenge->mSurvivalStage + 1) * 12000;
 		else
 			mBodyHealth = mApp->IsAdventureMode() ? mBoard->mLevel * 800 : 60000;
 
 		if (mApp->IsFirstTimeAdventureMode() && mApp->mDifficulty <= GameDifficulty::DIFFICULTY_HARD && mBoard->mLevel >= 41 && mBoard->mLevel <= 43)
 			mBodyHealth -= 29200; // Nerfed health for the first 3 roof levels
+		else if (mApp->mGameMode == GAMEMODE_CHALLENGE_INVISIGHOUL)
+			mBodyHealth -= 40000;
 
 		if (IsOnBoard())
 		{
@@ -10607,6 +10612,9 @@ void Zombie::BossSetupReanim()
 
 void Zombie::DrawBossPart(Graphics* g, BossPart theBossPart)
 {
+	if (mApp->mGameMode == GAMEMODE_CHALLENGE_INVISIGHOUL)
+		return;
+
 	ZombieDrawPosition aDrawPos;
 	GetDrawPos(aDrawPos);
 

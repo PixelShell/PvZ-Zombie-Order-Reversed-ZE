@@ -2676,7 +2676,7 @@ bool Board::CanAddBobSled()
 Zombie* Board::AddZombieInRow(ZombieType theZombieType, int theRow, int theFromWave)
 {
 	// Zombie order reverse. theFromWave -1 disables the reversing
-	if (theFromWave != -1)
+	if (theFromWave != -1 || theZombieType == ZombieType::ZOMBIE_IMP)
 	{
 		if(theZombieType != ZombieType::ZOMBIE_NORMAL || !mBossSpawned)
 		{
@@ -3967,6 +3967,14 @@ void Board::MouseDownWithPlant(int x, int y, int theClickCount)
 				if (aPumpkinPlant && aPumpkinPlant->mSeedType == SeedType::SEED_PUMPKINSHELL)
 				{
 					aPumpkinPlant->Die();
+				}
+			}
+			if (aPlantingSeedType == SeedType::SEED_WINTERMELON)
+			{
+				aNormalPlant = GetTopPlantAt(aGridX, aRow, PlantPriority::TOPPLANT_ONLY_NORMAL_POSITION);
+				if (aNormalPlant->mSeedType == SeedType::SEED_MELONPULT)
+				{
+					aNormalPlant->Die();
 				}
 			}
 			AddPlant(aGridX, aRow, mCursorObject->mType, mCursorObject->mImitaterType);
